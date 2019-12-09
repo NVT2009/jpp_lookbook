@@ -167,9 +167,7 @@ def main():
                 print("Step {} takes {} second(s) --- full_body -> Saved.".format(step, time.time() - start))
                 with open(os.path.join(OUTPUT_DIR, 'seg', 'fullbody_info.txt'), 'a') as writer:
                     writer.write("{},{}\n".format(reader.tmp, reader.tmp.replace('img/', 'seg/')))
-        else:
-            print("Step {} takes {} second(s).".format(step, time.time() - start))
-
+                print("Step {} takes {} second(s).".format(step, time.time() - start))
         with open(os.path.join(OUTPUT_DIR, 'check_flag.txt'), 'a') as writer:
             writer.write("{}\n".format(step))
 

@@ -18,7 +18,7 @@ def check_background_color(dir_image, parsing_img):
     seg_binary = np.where((temp > 0),1,0).astype(dtype='uint8')
     re_image = seg_binary[:,:, np.newaxis] * origin_image
     num_range = np.mean(re_image)
-    if num_range > 127:
+    if num_range > 160:
         return True
 
 
