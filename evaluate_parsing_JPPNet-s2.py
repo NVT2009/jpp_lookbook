@@ -170,6 +170,9 @@ def main():
         else:
             print("Step {} takes {} second(s).".format(step, time.time() - start))
 
+        with open(os.path.join(OUTPUT_DIR, 'check_flag.txt'), 'a') as writer:
+            writer.write("{}\n".format(step))
+
     coord.request_stop()
     coord.join(threads)
 
