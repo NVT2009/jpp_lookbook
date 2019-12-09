@@ -84,6 +84,7 @@ def read_labeled_image_list(data_dir, data_list):
     """
     f = open(data_list, 'r')
     images = []
+    arr_tmp = []
     count = 2
     for line in f:
         if count != 0:
@@ -94,8 +95,9 @@ def read_labeled_image_list(data_dir, data_list):
         except ValueError:  # Adhoc for test.
             image = line.strip("\n")
         tmp = image[0:image.find(' ')]
+        arr_tmp.append(tmp)
         images.append(data_dir + tmp)
-    return images, len(images), tmp
+    return images, len(images), arr_tmp
 
 def read_images_from_disk(input_queue, input_size, random_scale, random_mirror): # optional pre-processing arguments
     """Read one image and its corresponding mask with optional pre-processing.

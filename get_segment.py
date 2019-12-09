@@ -4,7 +4,8 @@ import numpy as np
 # face, hair,
 upper_colour_label = [(255,0,0), (0,0,255)]
 # LeftLeg, RightLeg, LeftShoe, RightShoe
-lower_colour_label = [(170,255,85), (85,255,170),(0,255,255),(0,170,255)]
+#lower_colour_label = [(170,255,85), (85,255,170),(0,255,255),(0,170,255)]
+lower_colour_label = [(0,255,255),(0,170,255)]
 
 
 def check_background_color(dir_image, parsing_img):
@@ -31,13 +32,13 @@ def check_full_body(parsing_img):
     parsing_img = open_cv_image[:, :, ::-1].copy()
     for colour in upper_colour_label:
         temp = cv2.inRange(parsing_img, colour, colour)
-        if len(np.nonzero(temp)) != 0:
+        if np.sum(temp) != 0:
             upper.append(temp)
 
     if len(upper) > 0:
         for colour in lower_colour_label:
             temp = cv2.inRange(parsing_img, colour, colour)
-            if len(np.nonzero(temp)) != 0:
+            if np.sum(temp) != 0:
                 lower.append(temp)
 
         if len(lower) > 0:
@@ -46,4 +47,3 @@ def check_full_body(parsing_img):
             return False
     else:
         return False
-

@@ -156,21 +156,30 @@ def main():
         msk = decode_labels(parsing_, num_classes=N_CLASSES)
         parsing_im = Image.fromarray(msk[0])
 
-        if check_full_body(parsing_im):
-            if check_background_color(image_list[step], parsing_im):
-                output_dir = '/'.join(str(os.path.join(OUTPUT_DIR, reader.tmp)).split('/')[:-1]).replace('img/',
+        if check_background_color(image_list[step], parsing_im): # background as VITON
+            if check_full_body(parsing_im): # full body
+                output_dir_full = '/'.join(str(os.path.join(OUTPUT_DIR, 'full_segment', reader.tmp[step])).split('/')[:-1]).replace('img/',
                                                                                                               'seg/')
-                if not os.path.exists(output_dir):
-                    os.makedirs(output_dir)
+                if not os.path.exists(output_dir_full):
+                    os.makedirs(output_dir_full)
 
-                parsing_im.save(os.path.join(OUTPUT_DIR, reader.tmp).replace('img/', 'seg/').replace('jpg', 'png'))
+                parsing_im.save(os.path.join(OUTPUT_DIR, 'full_segment', reader.tmp[step]).replace('img/', 'seg/').replace('jpg', 'png'))
                 print("Step {} takes {} second(s) --- full_body -> Saved.".format(step, time.time() - start))
-                with open(os.path.join(OUTPUT_DIR, 'seg', 'fullbody_info.txt'), 'a') as writer:
-                    writer.write("{},{}\n".format(reader.tmp, reader.tmp.replace('img/', 'seg/')))
-                print("Step {} takes {} second(s).".format(step, time.time() - start))
+                with open(os.path.join(OUTPUT_DIR, 'full_segment', 'fullbody_info.txt'), 'a') as writer:
+                    writer.write("{},{}\n".format(reader.tmp[step], reader.tmp[step].replace('img/', 'seg/')))
+            else: # a half of body
+                output_dir_half = '/'.join(str(os.path.join(OUTPUT_DIR, 'half_segment',reader.tmp[step])).split('/')[:-1]).replace('img/',
+                                                                                                         'seg/')
+                if not os.path.exists(output_dir_half):
+                    os.makedirs(output_dir_half)
+
+                parsing_im.save(os.path.join(OUTPUT_DIR, 'half_segment', reader.tmp[step]).replace('img/', 'seg/').replace('jpg', 'png'))
+                print("Step {} takes {} second(s) --- half_body -> Saved.".format(step, time.time() - start))
+                with open(os.path.join(OUTPUT_DIR, 'half_segment', 'halfbody_info.txt'), 'a') as writer:
+                    writer.write("{},{}\n".format(reader.tmp[step], reader.tmp[step].replace('img/', 'seg/')))
+
         with open(os.path.join(OUTPUT_DIR, 'check_flag.txt'), 'a') as writer:
             writer.write("{}\n".format(step))
-
     coord.request_stop()
     coord.join(threads)
 
