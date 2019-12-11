@@ -129,7 +129,7 @@ def main():
 
     # Which variables to load.
     restore_var = tf.global_variables()
-    # Set up tf session and initialize variables. 
+    # Set up tf session and initialize variables.
     config = tf.ConfigProto(log_device_placement=True, allow_soft_placement=True)
     config.gpu_options.allow_growth = True
     sess = tf.Session(config=config)
@@ -156,7 +156,7 @@ def main():
         msk = decode_labels(parsing_, num_classes=N_CLASSES)
         parsing_im = Image.fromarray(msk[0])
         # full body
-        if (check_lookbook(parsing_im)):
+        if (check_full_body(parsing_im)):
             print("Step {} takes {} second(s) --- JPP -> Saved.".format(step, time.time() - start))
             with open(os.path.join(OUTPUT_DIR, 'filter.txt'), 'a') as writer:
                 print(reader.tmp[step])

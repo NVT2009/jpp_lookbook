@@ -10,7 +10,7 @@ lower_colour_label = [(0,255,255),(0,170,255)]
 label_head = [(255,0,0), (0,0,255)] # Face, Hair
 label_arm = [(221,170,51),(255,255,0)] # left_arm , right_arm
 label_leg = [(170,255,85), (85,255,170)] # Left leg, Right leg
-label_shoe = [(0,255,255),(0,170,255)] # LeftShoe, RightShoe
+#label_shoe = [(0,255,255),(0,170,255)] # LeftShoe, RightShoe
 
 
 def check_background_color(dir_image, parsing_img):
@@ -28,31 +28,33 @@ def check_background_color(dir_image, parsing_img):
         return True
 
 
-def check_full_body(parsing_img):
+def check_full_body(parsing_im):
     upper =[]
+    mid = []
     lower = []
-    pil_image = parsing_img.convert('RGB')
+    pil_image = parsing_im.convert('RGB')
     open_cv_image = np.array(pil_image)
     # Convert RGB to BGR
-    parsing_img = open_cv_image[:, :, ::-1].copy()
-    for colour in upper_colour_label:
-        temp = cv2.inRange(parsing_img, colour, colour)
+    parsing_im = open_cv_image[:, :, ::-1].copy()
+    for colour in label_head:
+        temp = cv2.inRange(parsing_im, colour, colour)
         if np.sum(temp) != 0:
             upper.append(temp)
 
-    if len(upper) > 0:
-        for colour in lower_colour_label:
-            temp = cv2.inRange(parsing_img, colour, colour)
-            if np.sum(temp) != 0:
-                lower.append(temp)
+    for colour in label_arm:
+        temp = cv2.inRange(parsing_im, colour, colour)
+        if np.sum(temp) != 0:
+            mid.append(temp)
 
-        if len(lower) > 0:
-            return True
-        else:
-            return False
+    for colour in label_leg:
+        temp = cv2.inRange(parsing_im, colour, colour)
+        if np.sum(temp) != 0:
+            lower.append(temp)
+
+    if len(upper) == 2 and len(mid) > 0 and len(lower) > 0:
+        return True
     else:
         return False
-
 
 def check_lookbook(parsing_img):
     head_hair = []
