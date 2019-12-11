@@ -7,7 +7,7 @@ import time
 import scipy.misc
 import cv2
 from PIL import Image
-from get_segment import check_full_body, check_background_color
+from get_segment import check_full_body, check_background_color, check_lookbook
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
@@ -21,10 +21,10 @@ N_CLASSES = 20
 INPUT_SIZE = (384, 384)
 NUM_STEPS = 10000  # Number of images in the validation set.
 
-DATA_DIRECTORY = '/Users/macuser/Downloads/Deep_Fashion/In-shopclothes/'
-DATA_LIST_PATH = '/Users/macuser/Downloads/Deep_Fashion/list_eval_partition.txt'
+DATA_DIRECTORY = '/Users/macuser/Downloads/dataset/LOOKBOOK/lookbook/data/'
+DATA_LIST_PATH = '/Users/macuser/PycharmProjects/Processing_LOOKBOOK/duongpd/Todo_list_Tien2.txt'
 RESTORE_DIR = '/Users/macuser/Downloads/JPPNet-s2/model.ckpt-205632'
-OUTPUT_DIR = '/Users/macuser/Downloads/Deep_Fashion/In-shopclothes/output'
+OUTPUT_DIR = '/Users/macuser/Desktop'
 
 if not os.path.exists(OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR)
@@ -155,31 +155,39 @@ def main():
 
         msk = decode_labels(parsing_, num_classes=N_CLASSES)
         parsing_im = Image.fromarray(msk[0])
-
-        if check_background_color(image_list[step], parsing_im): # background as VITON
-            if check_full_body(parsing_im): # full body
-                output_dir_full = '/'.join(str(os.path.join(OUTPUT_DIR, 'full_segment', reader.tmp[step])).split('/')[:-1]).replace('img/',
-                                                                                                              'seg/')
-                if not os.path.exists(output_dir_full):
-                    os.makedirs(output_dir_full)
-
-                parsing_im.save(os.path.join(OUTPUT_DIR, 'full_segment', reader.tmp[step]).replace('img/', 'seg/').replace('jpg', 'png'))
-                print("Step {} takes {} second(s) --- full_body -> Saved.".format(step, time.time() - start))
-                with open(os.path.join(OUTPUT_DIR, 'full_segment', 'fullbody_info.txt'), 'a') as writer:
-                    writer.write("{},{}\n".format(reader.tmp[step], reader.tmp[step].replace('img/', 'seg/')))
-            else: # a half of body
-                output_dir_half = '/'.join(str(os.path.join(OUTPUT_DIR, 'half_segment',reader.tmp[step])).split('/')[:-1]).replace('img/',
-                                                                                                         'seg/')
-                if not os.path.exists(output_dir_half):
-                    os.makedirs(output_dir_half)
-
-                parsing_im.save(os.path.join(OUTPUT_DIR, 'half_segment', reader.tmp[step]).replace('img/', 'seg/').replace('jpg', 'png'))
-                print("Step {} takes {} second(s) --- half_body -> Saved.".format(step, time.time() - start))
-                with open(os.path.join(OUTPUT_DIR, 'half_segment', 'halfbody_info.txt'), 'a') as writer:
-                    writer.write("{},{}\n".format(reader.tmp[step], reader.tmp[step].replace('img/', 'seg/')))
-
+        # full body
+        if (check_lookbook(parsing_im)):
+            print("Step {} takes {} second(s) --- JPP -> Saved.".format(step, time.time() - start))
+            with open(os.path.join(OUTPUT_DIR, 'filter.txt'), 'a') as writer:
+                print(reader.tmp[step])
+                writer.write("{}\n".format(reader.tmp[step]))
         with open(os.path.join(OUTPUT_DIR, 'check_flag.txt'), 'a') as writer:
             writer.write("{}\n".format(step))
+
+        # if check_background_color(image_list[step], parsing_im): # background as VITON
+        #     if check_full_body(parsing_im): # full body
+        #         output_dir_full = '/'.join(str(os.path.join(OUTPUT_DIR, 'full_segment', reader.tmp[step])).split('/')[:-1]).replace('img/',
+        #                                                                                                       'seg/')
+        #         if not os.path.exists(output_dir_full):
+        #             os.makedirs(output_dir_full)
+        #
+        #         parsing_im.save(os.path.join(OUTPUT_DIR, 'full_segment', reader.tmp[step]).replace('img/', 'seg/').replace('jpg', 'png'))
+        #         print("Step {} takes {} second(s) --- full_body -> Saved.".format(step, time.time() - start))
+        #         with open(os.path.join(OUTPUT_DIR, 'full_segment', 'fullbody_info.txt'), 'a') as writer:
+        #             writer.write("{},{}\n".format(reader.tmp[step], reader.tmp[step].replace('img/', 'seg/')))
+        #     else: # a half of body
+        #         output_dir_half = '/'.join(str(os.path.join(OUTPUT_DIR, 'half_segment',reader.tmp[step])).split('/')[:-1]).replace('img/',
+        #                                                                                                  'seg/')
+        #         if not os.path.exists(output_dir_half):
+        #             os.makedirs(output_dir_half)
+        #
+        #         parsing_im.save(os.path.join(OUTPUT_DIR, 'half_segment', reader.tmp[step]).replace('img/', 'seg/').replace('jpg', 'png'))
+        #         print("Step {} takes {} second(s) --- half_body -> Saved.".format(step, time.time() - start))
+        #         with open(os.path.join(OUTPUT_DIR, 'half_segment', 'halfbody_info.txt'), 'a') as writer:
+        #             writer.write("{},{}\n".format(reader.tmp[step], reader.tmp[step].replace('img/', 'seg/')))
+        #
+        # with open(os.path.join(OUTPUT_DIR, 'check_flag.txt'), 'a') as writer:
+        #     writer.write("{}\n".format(step))
     coord.request_stop()
     coord.join(threads)
 

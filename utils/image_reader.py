@@ -87,16 +87,19 @@ def read_labeled_image_list(data_dir, data_list):
     arr_tmp = []
     count = 2
     for line in f:
-        if count != 0:
-            count -= 1
-            continue
-        try:
-            image, mask = line.strip("\n").split(' ')
-        except ValueError:  # Adhoc for test.
-            image = line.strip("\n")
-        tmp = image[0:image.find(' ')]
-        arr_tmp.append(tmp)
-        images.append(data_dir + tmp)
+        # if count != 0:
+        #     count -= 1
+        #     continue
+        # try:
+        #     image, mask = line.strip("\n").split(' ')
+        # except ValueError:  # Adhoc for test.
+        #     image = line.strip("\n")
+        # tmp = image[0:image.find(' ')]
+        # arr_tmp.append(tmp)
+        dir = line.strip("\n")
+        arr_tmp.append(dir)
+        images.append(data_dir + dir)
+        a = 0
     return images, len(images), arr_tmp
 
 def read_images_from_disk(input_queue, input_size, random_scale, random_mirror): # optional pre-processing arguments
